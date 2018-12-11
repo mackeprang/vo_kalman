@@ -1,0 +1,2 @@
+accXVariance, accYVariance, accZVariance, gyroRollVariance, gyroPitchVariance, gyroHeadingVariance,  depth_variance,
+0.00040897493753392456, 0.0004259367195854971, 0.001374852907244092, 0.008989658330066432, 0.011692982075009326, 0.011930307904842877, 0.01

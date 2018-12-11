@@ -1,0 +1,7 @@
+from sys import platform
+
+# CONSTANTS
+IM_PRE_EQ_HIST = 0
+IM_PRE_CLASE = 1
+IM_PRE_RESOLUTION = (640,480)
+SYS_PLATFORM = platform
