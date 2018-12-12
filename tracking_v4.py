@@ -54,7 +54,7 @@ def voProcessFunc(image_queue, CposQueue,scale,running):
 
         im = image_queue.get()
         
-        tracker.track(im)
+        tracker.track(im,verbose=True)
         #print(tracker._C)
         CposQueue.put({'R':tracker._R,'t':tracker._t,'scale':tracker._scale[-1],'fps':1/(time.time()-t1)})
         scale.value = tracker._scale[-1]
