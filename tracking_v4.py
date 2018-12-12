@@ -38,7 +38,7 @@ def preProcessImg(q1,running):
         q1.put(gray)
 
 
-def voProcessFunc(image_queue, CposQueue,scale,running,num):
+def voProcessFunc(image_queue, CposQueue,scale,running):
     feat = tr.featureDetector('good')
     tracker = tr.tracking(feat)
     print("voProcess started...")
@@ -313,7 +313,7 @@ if __name__ == '__main__':
     q.append(CposQueue)
 
     imgProcess = mp.Process(target=preProcessImg, args=(preProcessImgQueue1,running))
-    voProcess1 = mp.Process(target=voProcessFunc,args=(preProcessImgQueue1,CposQueue,scale_cam,running,1))
+    voProcess1 = mp.Process(target=voProcessFunc,args=(preProcessImgQueue1,CposQueue,scale_cam,running))
     kalman = mp.Process(target=kalmanProcess,args=(CposQueue,kfPosQueue,scale_cam,running))
     #plotter = mp.Process(target=plotterProcess,args=(CposQueue,kfPosQueue,scale_cam,running))
     process.append(imgProcess)
