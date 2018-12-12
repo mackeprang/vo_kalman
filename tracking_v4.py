@@ -34,9 +34,7 @@ def preProcessImg(q1,running):
             continue
         im = cv2.imread(frame)
         gray = auv.preprocess_image(im, size=auv.IM_PRE_RESOLUTION,method=auv.IM_PRE_EQ_HIST)
-
         q1.put(gray)
-
 
 def voProcessFunc(image_queue, CposQueue,scale,running):
     feat = tr.featureDetector('good')
@@ -51,10 +49,12 @@ def voProcessFunc(image_queue, CposQueue,scale,running):
 
         while image_queue.empty():
             time.sleep(0.01)
-
+        t_q = time.time()
         im = image_queue.get()
-        
+
         tracker.track(im,verbose=True)
+        print("im.get(): ",time.time()-t_q)
+        tracker.track(im)
         #print(tracker._C)
         CposQueue.put({'R':tracker._R,'t':tracker._t,'scale':tracker._scale[-1],'fps':1/(time.time()-t1)})
         scale.value = tracker._scale[-1]
@@ -301,7 +301,8 @@ if __name__ == '__main__':
     scale_imu = mp.Value('d',0.2)
     lock_scale_imu = mp.Lock()
     running = mp.Value('i',1)
-    preProcessImgQueue1 = mp.Queue()
+    test_array = mp.Array('d',(800,600))
+    preProcessImgQueue1 = mp.Queue(maxsize=1)
     kfPosQueue = mp.Queue()
     voQueue = mp.Queue()
     CposQueue = mp.Queue()
