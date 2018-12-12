@@ -1,1 +1,7 @@
 *.pyc
+.idea/workspace.xml
+.idea/vo_kalman.iml
+.idea/vcs.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/dictionaries/Mackeprang.xml
