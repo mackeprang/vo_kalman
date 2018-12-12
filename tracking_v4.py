@@ -53,13 +53,12 @@ def voProcessFunc(image_queue, CposQueue,scale,running):
             time.sleep(0.01)
 
         im = image_queue.get()
-        image_queue.task_done()
         
         tracker.track(im)
         #print(tracker._C)
-        CposQueue.put(tracker._C)
+        CposQueue.put({'R':tracker._R,'t':tracker._t,'scale':tracker._scale[-1],'fps':1/(time.time()-t1)})
         scale.value = tracker._scale[-1]
-        print("FPS {}: {:.3f}".format(num,1/(time.time()-t1)))
+        #print("FPS: {:.3f}".format(1/(time.time()-t1)))
 
         
 
@@ -83,7 +82,6 @@ def plotterProcess(CposQueue,scale,running):
             return
 
         C_CAM = CposQueue.get()
-        CposQueue.task_done()
         if C is None:
             print("Here")
             C = np.dot(kf.C_CAM_to_AUV,C_CAM)
@@ -231,7 +229,6 @@ def kalmanProcess(CposQueue,kfPosQueue,scale_cam,running):
         if vo_t == 2:  # Visuel odometry
             pass
             t_cam = CposQueue.get()
-            CposQueue.task_done()
             t_cam = t_cam[0:3,3]
             #print(t_cam)
         if i > -1:
@@ -292,7 +289,7 @@ def kalmanProcess(CposQueue,kfPosQueue,scale_cam,running):
         rot = auv.calculate_rotation_matrix(xAngle, yAngle, zAngle)
 
         tposKf[t] = tposKf[t-1] + np.transpose(np.dot(rot, tdiff)) * fsm[t, -1] # scale
-        print("Kalman: {:.3f}".format(1/(time.time()-t_start)))
+        #print("Kalman: {:.3f}".format(1/(time.time()-t_start)))
 
 
 if __name__ == '__main__':
@@ -304,10 +301,10 @@ if __name__ == '__main__':
     scale_imu = mp.Value('d',0.2)
     lock_scale_imu = mp.Lock()
     running = mp.Value('i',1)
-    preProcessImgQueue1 = mp.JoinableQueue()
-    kfPosQueue = mp.JoinableQueue()
-    voQueue = mp.JoinableQueue()
-    CposQueue = mp.JoinableQueue()
+    preProcessImgQueue1 = mp.Queue()
+    kfPosQueue = mp.Queue()
+    voQueue = mp.Queue()
+    CposQueue = mp.Queue()
     q.append(preProcessImgQueue1)
     q.append(voQueue)
     q.append(CposQueue)
@@ -322,7 +319,10 @@ if __name__ == '__main__':
     process.append(kalman)
     for p in process:
         p.start()
-    time.sleep(100)
+    for t in range(100):
+        time.sleep(1)
+        voT = CposQueue.get()
+        print("fps: ",voT['fps'])
     running.value = 0
 
 
